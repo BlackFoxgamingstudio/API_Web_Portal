@@ -1,0 +1,69 @@
+import { KeyWordDetailService } from '../../shared/KeyWord-detail.service';
+import { Component, OnInit } from '@angular/core';
+import { NgForm } from '@angular/forms';
+import { ToastrService } from 'ngx-toastr';
+
+@Component({
+  selector: 'app-KeyWord-detail',
+  templateUrl: './KeyWord-detail.component.html',
+  styles: []
+})
+export class KeyWordDetailComponent implements OnInit {
+
+  constructor(private service: KeyWordDetailService,
+    private toastr: ToastrService) { }
+
+  ngOnInit() {
+    this.resetForm();
+  }
+
+
+  resetForm(form?: NgForm) {
+    if (form != null)
+      form.form.reset();
+    this.service.formData = {
+      KWId: 0,
+      KeyWord: '',
+      Description: '',
+      imageurl: '',
+      docurl: '',
+      Sourcename: ''
+  
+    }
+  }
+
+  onSubmit(form: NgForm) {
+    if (this.service.formData.KWId == 0)
+      this.insertRecord(form);
+    else
+      this.updateRecord(form);
+  }
+
+  insertRecord(form: NgForm) {
+    this.service.postKeyWordDetail().subscribe(
+      res => {
+        debugger;
+        this.resetForm(form);
+        this.toastr.success('Submitted successfully', 'KeyWord Detail Register');
+        this.service.refreshList();
+      },
+      err => {
+        debugger;
+        console.log(err);
+      }
+    )
+  }
+  updateRecord(form: NgForm) {
+    this.service.putKeyWordDetail().subscribe(
+      res => {
+        this.resetForm(form);
+        this.toastr.info('Submitted successfully', 'KeyWord Detail Register');
+        this.service.refreshList();
+      },
+      err => {
+        console.log(err);
+      }
+    )
+  }
+
+}
